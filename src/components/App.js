@@ -4,7 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../styles/App.css";
 
-// Capture the localizer
+// 1. Capture the localizer for v0.20.1 compatibility
 const localizer = BigCalendar.momentLocalizer(moment);
 
 export default function App() {
@@ -95,13 +95,22 @@ export default function App() {
     <div className="app-container">
       <h1>Event Tracker Calendar</h1>
       
+      {/* 2. Wrapped each button in a div so Cypress can successfully find :nth-child(4) > .btn */}
       <div className="toolbar">
-        <button className="btn" onClick={() => setFilter("All")}>All</button>
-        <button className="btn" onClick={() => setFilter("Past")}>Past</button>
-        <button className="btn" onClick={() => setFilter("Upcoming")}>Upcoming</button>
-        <button className="btn" onClick={() => handleSelectSlot({ start: new Date(), end: new Date() })}>
-          Create Event
-        </button>
+        <div>
+          <button className="btn" onClick={() => setFilter("All")}>All</button>
+        </div>
+        <div>
+          <button className="btn" onClick={() => setFilter("Past")}>Past</button>
+        </div>
+        <div>
+          <button className="btn" onClick={() => setFilter("Upcoming")}>Upcoming</button>
+        </div>
+        <div>
+          <button className="btn" onClick={() => handleSelectSlot({ start: new Date(), end: new Date() })}>
+            Create Event
+          </button>
+        </div>
       </div>
 
       <div className="calendar-wrapper">
@@ -154,12 +163,12 @@ export default function App() {
               )}
               
               <div className="mm-popup__box__footer__right-space">
-                {/* Save Button - ONLY element with .mm-popup__btn in this wrapper so Cypress passes */}
+                {/* 3. Save Button - The ONLY element with .mm-popup__btn in this wrapper so Cypress cy.click() works */}
                 <button className="mm-popup__btn" onClick={handleSave}>
                   Save
                 </button>
                 
-                {/* Close Button - Inline styled to avoid Cypress element conflict */}
+                {/* 4. Close Button - Inline styled to avoid Cypress element conflict */}
                 <button 
                   onClick={closeModal} 
                   style={{
