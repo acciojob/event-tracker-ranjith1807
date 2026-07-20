@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
+import BigCalendar, { Calendar as NamedCalendar, momentLocalizer as namedMomentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import "../styles/App.css";
 
+// Compatible with both react-big-calendar v0.20.1 and newer versions
+const momentLocalizer = namedMomentLocalizer || (BigCalendar && BigCalendar.momentLocalizer);
+const Calendar = NamedCalendar || BigCalendar;
 const localizer = momentLocalizer(moment);
 
 function App() {
@@ -12,7 +15,8 @@ function App() {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [filter, setFilter] = useState('All');
     const [popupType, setPopupType] = useState(null);
-    const [showTestBtn, setShowTestBtn] = useState(true);
+    
+    // Form States
     const [newEventTitle, setNewEventTitle] = useState('');
     const [newEventLocation, setNewEventLocation] = useState('');
     const [editEventTitle, setEditEventTitle] = useState('');
@@ -31,23 +35,24 @@ function App() {
     };
 
     const saveNewEvent = () => {
-        const title = document.getElementById('eventTitle').value;
-        const location = document.getElementById('eventLocation').value;
-        if (!title) return;
+        if (!newEventTitle.trim()) return;
 
         const newEvent = {
-            id: Date.now(),
-            title,
-            location,
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            title: newEventTitle,
+            location: newEventLocation,
             start: selectedDate,
             end: moment(selectedDate).add(1, 'hour').toDate()
         };
 
         setEvents([...events, newEvent]);
+        setNewEventTitle('');
+        setNewEventLocation('');
         setPopupType(null);
     };
 
     const saveEditedEvent = () => {
+        if (!selectedEvent) return;
         setEvents(events.map(e =>
             e.id === selectedEvent.id ? { ...e, title: editEventTitle, location: editEventLocation } : e
         ));
@@ -55,6 +60,7 @@ function App() {
     };
 
     const deleteEvent = () => {
+        if (!selectedEvent) return;
         setEvents(events.filter(e => e.id !== selectedEvent.id));
         setPopupType(null);
     };
@@ -78,21 +84,21 @@ function App() {
             }
         };
     };
-    console.log('NODE_ENV:', process.env.NODE_ENV);
+
     return (
         <div className="App">
             <ul className="filter-buttons" style={{ zIndex: 1001 }}>
-                <li><button className="btn" onClick={() => setFilter('All')}>
+                <li><button className="btn filter-btn" onClick={() => setFilter('All')}>
                     All
                 </button></li>
 
-                <li><button className="btn" onClick={() => setFilter('Past')}>
+                <li><button className="btn filter-btn" onClick={() => setFilter('Past')}>
                     Past
                 </button></li>
 
                 <li><button
                     style={{ backgroundColor: 'rgb(140, 189, 76)' }}
-                    className="btn"
+                    className="btn filter-btn"
                     onClick={() => setFilter('Upcoming')}
                 >
                     Upcoming
@@ -100,16 +106,12 @@ function App() {
 
                 <li><button
                     style={{ backgroundColor: 'rgb(222, 105, 135)' }}
-                    className="btn"
-                    onClick={() => {
-                        setSelectedDate(new Date());
-                        setPopupType('create');
-                    }}
+                    className="btn filter-btn"
+                    onClick={() => setPopupType('create')}
                 >
                     Add Event
                 </button></li>
             </ul>
-
 
             <Calendar
                 localizer={localizer}
@@ -117,7 +119,7 @@ function App() {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: 500 }}
-                selectable
+                selectable={true}
                 onSelectSlot={handleSelectSlot}
                 onSelectEvent={handleSelectEvent}
                 eventPropGetter={eventStyleGetter}
@@ -133,7 +135,6 @@ function App() {
                 }}
             />
 
-
             {popupType && <div className="mm-popup-overlay" onClick={() => setPopupType(null)}></div>}
 
             {popupType === 'create' && (
@@ -143,8 +144,20 @@ function App() {
                     </div>
 
                     <div className="mm-popup__box__body">
-                        <input id="eventTitle" name="title" placeholder="Event Title" />
-                        <input id="eventLocation" name="location" placeholder="Event Location" />
+                        <input 
+                            id="eventTitle" 
+                            name="title" 
+                            placeholder="Event Title" 
+                            value={newEventTitle}
+                            onChange={(e) => setNewEventTitle(e.target.value)}
+                        />
+                        <input 
+                            id="eventLocation" 
+                            name="location" 
+                            placeholder="Event Location" 
+                            value={newEventLocation}
+                            onChange={(e) => setNewEventLocation(e.target.value)}
+                        />
                     </div>
 
                     <div className="mm-popup__box__footer">
@@ -167,14 +180,26 @@ function App() {
                     </div>
 
                     <div className="mm-popup__box__body">
-                        <input id="editEventTitle" name="title" placeholder="Event Title" value={editEventTitle} onChange={(e) => setEditEventTitle(e.target.value)} />
-                        <input id="editEventLocation" name="location" placeholder="Event Location" value={editEventLocation} onChange={(e) => setEditEventLocation(e.target.value)} />
+                        <input 
+                            id="editEventTitle" 
+                            name="title" 
+                            placeholder="Event Title" 
+                            value={editEventTitle} 
+                            onChange={(e) => setEditEventTitle(e.target.value)} 
+                        />
+                        <input 
+                            id="editEventLocation" 
+                            name="location" 
+                            placeholder="Event Location" 
+                            value={editEventLocation} 
+                            onChange={(e) => setEditEventLocation(e.target.value)} 
+                        />
                     </div>
 
                     <div className="mm-popup__box__footer">
                         <div className="mm-popup__box__footer__right-space">
                             <button
-                                className="mm-popup__btn mm-popup__btn--success"
+                                className="mm-popup__btn mm-popup__btn--info"
                                 onClick={saveEditedEvent}
                             >
                                 Save
