@@ -1,193 +1,196 @@
-import React, { useState } from "react";
-import BigCalendar from "react-big-calendar";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
+import React, { useState } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 import "../styles/App.css";
 
-// 1. Capture the localizer for v0.20.1 compatibility
-const localizer = BigCalendar.momentLocalizer(moment);
+const localizer = momentLocalizer(moment);
 
-export default function App() {
-  const [events, setEvents] = useState([]);
-  const [filter, setFilter] = useState("All");
+function App() {
+    const [events, setEvents] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [filter, setFilter] = useState('All');
+    const [popupType, setPopupType] = useState(null);
+    const [showTestBtn, setShowTestBtn] = useState(true);
+    const [newEventTitle, setNewEventTitle] = useState('');
+    const [newEventLocation, setNewEventLocation] = useState('');
+    const [editEventTitle, setEditEventTitle] = useState('');
+    const [editEventLocation, setEditEventLocation] = useState('');
 
-  // Modal State
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("create");
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  
-  // Form State
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [currentSlot, setCurrentSlot] = useState(null);
-
-  // --- Handlers ---
-  const handleSelectSlot = (slotInfo) => {
-    setCurrentSlot(slotInfo);
-    setTitle("");
-    setLocation("");
-    setModalType("create");
-    setShowModal(true);
-  };
-
-  const handleSelectEvent = (event) => {
-    setSelectedEvent(event);
-    setTitle(event.title);
-    setLocation(event.location);
-    setModalType("edit");
-    setShowModal(true);
-  };
-
-  const handleSave = () => {
-    if (modalType === "create") {
-      const newEvent = {
-        id: Math.random().toString(36).substr(2, 9),
-        title,
-        location,
-        start: currentSlot ? currentSlot.start : new Date(),
-        end: currentSlot ? currentSlot.end : new Date(),
-      };
-      setEvents([...events, newEvent]);
-    } else if (modalType === "edit") {
-      setEvents(
-        events.map((ev) =>
-          ev.id === selectedEvent.id ? { ...ev, title, location } : ev
-        )
-      );
-    }
-    setShowModal(false);
-  };
-
-  const handleDelete = () => {
-    setEvents(events.filter((ev) => ev.id !== selectedEvent.id));
-    setShowModal(false);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedEvent(null);
-  };
-
-  // --- Display & Styling Logic ---
-  const filteredEvents = events.filter((event) => {
-    const isPast = moment(event.end).isBefore(moment());
-    if (filter === "Past") return isPast;
-    if (filter === "Upcoming") return !isPast;
-    return true; // "All"
-  });
-
-  const eventPropGetter = (event) => {
-    const isPast = moment(event.end).isBefore(moment());
-    const backgroundColor = isPast
-      ? "rgb(222, 105, 135)" // Pink for past events
-      : "rgb(140, 189, 76)"; // Green for upcoming events
-    return {
-      style: {
-        backgroundColor,
-        color: "white",
-        border: "none",
-        borderRadius: "4px",
-      },
+    const handleSelectSlot = (slotInfo) => {
+        setSelectedDate(slotInfo.start);
+        setPopupType('create');
     };
-  };
 
-  return (
-    <div className="app-container">
-      <h1>Event Tracker Calendar</h1>
-      
-      {/* 2. Wrapped each button in a div so Cypress can successfully find :nth-child(4) > .btn */}
-      <div className="toolbar">
-        <div>
-          <button className="btn" onClick={() => setFilter("All")}>All</button>
-        </div>
-        <div>
-          <button className="btn" onClick={() => setFilter("Past")}>Past</button>
-        </div>
-        <div>
-          <button className="btn" onClick={() => setFilter("Upcoming")}>Upcoming</button>
-        </div>
-        <div>
-          <button className="btn" onClick={() => handleSelectSlot({ start: new Date(), end: new Date() })}>
-            Create Event
-          </button>
-        </div>
-      </div>
+    const handleSelectEvent = (event) => {
+        setSelectedEvent(event);
+        setEditEventTitle(event.title);
+        setEditEventLocation(event.location);
+        setPopupType('edit');
+    };
 
-      <div className="calendar-wrapper">
-        <BigCalendar
-          localizer={localizer}
-          events={filteredEvents}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 600 }}
-          selectable
-          onSelectSlot={handleSelectSlot}
-          onSelectEvent={handleSelectEvent}
-          eventPropGetter={eventPropGetter}
-        />
-      </div>
+    const saveNewEvent = () => {
+        const title = document.getElementById('eventTitle').value;
+        const location = document.getElementById('eventLocation').value;
+        if (!title) return;
 
-      {showModal && (
-        <div className="mm-popup">
-          <div className="mm-popup__box">
-            <h2 className="mm-popup__box__title">
-              {modalType === "create" ? "Create Event" : "Edit Event"}
-            </h2>
-            <div className="mm-popup__box__body">
-              <input
-                type="text"
-                placeholder="Event Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="popup-input"
-              />
-              <input
-                type="text"
-                placeholder="Event Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="popup-input"
-              />
-            </div>
-            
-            <div className="mm-popup__box__footer">
-              {modalType === "edit" && (
-                <div className="mm-popup__box__footer__left-space">
-                  <button className="mm-popup__btn mm-popup__btn--info" onClick={handleSave}>
-                    Update
-                  </button>
-                  <button className="mm-popup__btn mm-popup__btn--danger" onClick={handleDelete}>
-                    Delete
-                  </button>
-                </div>
-              )}
-              
-              <div className="mm-popup__box__footer__right-space">
-                {/* 3. Save Button - The ONLY element with .mm-popup__btn in this wrapper so Cypress cy.click() works */}
-                <button className="mm-popup__btn" onClick={handleSave}>
-                  Save
-                </button>
-                
-                {/* 4. Close Button - Inline styled to avoid Cypress element conflict */}
-                <button 
-                  onClick={closeModal} 
-                  style={{
-                    padding: '8px 12px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    backgroundColor: '#6c757d',
-                    color: 'white'
-                  }}
+        const newEvent = {
+            id: Date.now(),
+            title,
+            location,
+            start: selectedDate,
+            end: moment(selectedDate).add(1, 'hour').toDate()
+        };
+
+        setEvents([...events, newEvent]);
+        setPopupType(null);
+    };
+
+    const saveEditedEvent = () => {
+        setEvents(events.map(e =>
+            e.id === selectedEvent.id ? { ...e, title: editEventTitle, location: editEventLocation } : e
+        ));
+        setPopupType(null);
+    };
+
+    const deleteEvent = () => {
+        setEvents(events.filter(e => e.id !== selectedEvent.id));
+        setPopupType(null);
+    };
+
+    const filteredEvents = events.filter(event => {
+        const now = new Date();
+        const isPast = moment(event.start).isBefore(now);
+
+        if (filter === 'All') return true;
+        if (filter === 'Past') return isPast;
+        if (filter === 'Upcoming') return !isPast;
+        return true;
+    });
+
+    const eventStyleGetter = (event) => {
+        const isPast = moment(event.start).isBefore(new Date());
+        return {
+            style: {
+                backgroundColor: isPast ? 'rgb(222, 105, 135)' : 'rgb(140, 189, 76)',
+                color: 'white'
+            }
+        };
+    };
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    return (
+        <div className="App">
+            <ul className="filter-buttons" style={{ zIndex: 1001 }}>
+                <li><button className="btn" onClick={() => setFilter('All')}>
+                    All
+                </button></li>
+
+                <li><button className="btn" onClick={() => setFilter('Past')}>
+                    Past
+                </button></li>
+
+                <li><button
+                    style={{ backgroundColor: 'rgb(140, 189, 76)' }}
+                    className="btn"
+                    onClick={() => setFilter('Upcoming')}
                 >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
+                    Upcoming
+                </button></li>
+
+                <li><button
+                    style={{ backgroundColor: 'rgb(222, 105, 135)' }}
+                    className="btn"
+                    onClick={() => {
+                        setSelectedDate(new Date());
+                        setPopupType('create');
+                    }}
+                >
+                    Add Event
+                </button></li>
+            </ul>
+
+
+            <Calendar
+                localizer={localizer}
+                events={filteredEvents}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 500 }}
+                selectable
+                onSelectSlot={handleSelectSlot}
+                onSelectEvent={handleSelectEvent}
+                eventPropGetter={eventStyleGetter}
+                components={{
+                    event: ({ event }) => (
+                        <span
+                            style={eventStyleGetter(event).style}
+                            className="calendar-event"
+                        >
+                            {event.title}
+                        </span>
+                    )
+                }}
+            />
+
+
+            {popupType && <div className="mm-popup-overlay" onClick={() => setPopupType(null)}></div>}
+
+            {popupType === 'create' && (
+                <div className="mm-popup__box">
+                    <div className="mm-popup__box__header">
+                        Create Event
+                    </div>
+
+                    <div className="mm-popup__box__body">
+                        <input id="eventTitle" name="title" placeholder="Event Title" />
+                        <input id="eventLocation" name="location" placeholder="Event Location" />
+                    </div>
+
+                    <div className="mm-popup__box__footer">
+                        <div className="mm-popup__box__footer__right-space">
+                            <button
+                                className="mm-popup__btn"
+                                onClick={saveNewEvent}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {popupType === 'edit' && selectedEvent && (
+                <div className="mm-popup__box">
+                    <div className="mm-popup__box__header">
+                        Edit Event
+                    </div>
+
+                    <div className="mm-popup__box__body">
+                        <input id="editEventTitle" name="title" placeholder="Event Title" value={editEventTitle} onChange={(e) => setEditEventTitle(e.target.value)} />
+                        <input id="editEventLocation" name="location" placeholder="Event Location" value={editEventLocation} onChange={(e) => setEditEventLocation(e.target.value)} />
+                    </div>
+
+                    <div className="mm-popup__box__footer">
+                        <div className="mm-popup__box__footer__right-space">
+                            <button
+                                className="mm-popup__btn mm-popup__btn--success"
+                                onClick={saveEditedEvent}
+                            >
+                                Save
+                            </button>
+                            <button
+                                className="mm-popup__btn mm-popup__btn--danger"
+                                onClick={deleteEvent}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
+
+export default App;

@@ -1,101 +1,82 @@
-.app-container {
+.App {
   font-family: Arial, sans-serif;
-  padding: 20px;
-  max-width: 1000px;
-  margin: auto;
 }
 
-.toolbar {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
+.filter-buttons {
+  margin-bottom: 10px;
 }
-
-.btn {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
+.filter-btn {
+  margin-right: 10px;
+  padding: 5px 10px;
   cursor: pointer;
-  font-weight: bold;
 }
 
-.btn:hover {
-  background-color: #0056b3;
-}
-
-/* Custom Modal Styles (Matching react-popup structure) */
-.mm-popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 
 .mm-popup__box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: white;
+  border: 1px solid #ccc;
   padding: 20px;
-  border-radius: 8px;
-  width: 350px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.mm-popup__box__title {
-  margin-top: 0;
-  font-size: 1.2rem;
+.mm-popup__box__header {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .mm-popup__box__body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.popup-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.mm-popup__box__body input {
+  display: block;
+  margin-bottom: 5px;
   width: 100%;
-  box-sizing: border-box;
+  padding: 5px;
 }
 
 .mm-popup__box__footer {
-  display: flex;
-  justify-content: space-between;
+  text-align: right;
 }
 
-.mm-popup__box__footer__left-space,
 .mm-popup__box__footer__right-space {
-  display: flex;
-  gap: 10px;
+  display: inline-block;
+  margin-right: 10px;
 }
 
 .mm-popup__btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
+  padding: 5px 10px;
   cursor: pointer;
-  font-weight: bold;
-  background-color: #007bff;
+  background: #007bff;
   color: white;
+  border: none;
 }
 
 .mm-popup__btn--info {
-  background-color: #17a2b8;
+  background: #17a2b8;
 }
 
 .mm-popup__btn--danger {
-  background-color: #dc3545;
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
-.mm-popup__btn:hover {
-  opacity: 0.9;
+/* Overlay to dim background */
+.mm-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+pointer-events: none;
 }
