@@ -4,17 +4,13 @@
 
 .filter-buttons {
   margin-bottom: 10px;
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 10px;
 }
-
 .filter-btn {
   margin-right: 10px;
   padding: 5px 10px;
   cursor: pointer;
 }
+
 
 .mm-popup__box {
   position: fixed;
@@ -82,5 +78,5 @@
   height: 100%;
   background: rgba(0,0,0,0.5);
   z-index: 999;
-  pointer-events: none;
+pointer-events: none;
 }
