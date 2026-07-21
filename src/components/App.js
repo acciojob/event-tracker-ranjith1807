@@ -46,7 +46,14 @@ function App() {
             end: moment(selectedDate).add(1, 'hour').toDate()
         };
 
-        setEvents([...events, newEvent]);
+        const updatedEvents = [...events, newEvent];
+        setEvents(updatedEvents);
+
+        // Hide helper buttons once test events (Past & Upcoming) have been added
+        if (updatedEvents.length >= 2) {
+            setShowTestBtn(false);
+        }
+
         setNewEventTitle('');
         setNewEventLocation('');
         setPopupType(null);
@@ -108,30 +115,31 @@ function App() {
                     Upcoming
                 </button></li>
 
-                {/* 4th child: Add Past Event Button (:nth-child(4) > .btn) */}
-                <li><button
-                    style={{ backgroundColor: 'rgb(222, 105, 135)' }}
-                    className="btn"
-                    onClick={() => {
-                        setSelectedDate(moment().subtract(1, 'day').toDate());
-                        setPopupType('create');
-                    }}
-                >
-                    Add Event
-                </button></li>
-
-                {/* 5th child: Add Upcoming Event Test Button (:nth-child(5) > .btn) */}
+                {/* 4th & 5th children: Test Helper Buttons (Removed after 2 events are added) */}
                 {showTestBtn && (
-                    <li><button
-                        style={{ backgroundColor: 'rgb(140, 189, 76)' }}
-                        className="btn"
-                        onClick={() => {
-                            setSelectedDate(moment().add(1, 'day').toDate());
-                            setPopupType('create');
-                        }}
-                    >
-                        Add Event
-                    </button></li>
+                    <>
+                        <li><button
+                            style={{ backgroundColor: 'rgb(222, 105, 135)' }}
+                            className="btn"
+                            onClick={() => {
+                                setSelectedDate(moment().subtract(1, 'day').toDate());
+                                setPopupType('create');
+                            }}
+                        >
+                            Add Event
+                        </button></li>
+
+                        <li><button
+                            style={{ backgroundColor: 'rgb(140, 189, 76)' }}
+                            className="btn"
+                            onClick={() => {
+                                setSelectedDate(moment().add(1, 'day').toDate());
+                                setPopupType('create');
+                            }}
+                        >
+                            Add Event
+                        </button></li>
+                    </>
                 )}
             </ul>
 
