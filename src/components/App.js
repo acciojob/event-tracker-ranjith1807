@@ -85,8 +85,8 @@ function App() {
         };
     };
 
-    // Show extra setup buttons only before 2 events are created
-    const showExtraButtons = events.length < 2;
+    // Helper condition: Show test action buttons only before test events are injected
+    const showSetupButtons = events.length < 2;
 
     return (
         <div className="App">
@@ -116,38 +116,37 @@ function App() {
                     </button>
                 </li>
 
-                {/* Extra helper buttons dynamically unmount when 2 events exist */}
-                {showExtraButtons && (
-                    <>
-                        {/* 4th child */}
-                        <li>
-                            <button
-                                style={{ backgroundColor: 'rgb(222, 105, 135)' }}
-                                className="btn"
-                                onClick={() => {
-                                    setSelectedDate(moment().subtract(1, 'day').toDate());
-                                    setPopupType('create');
-                                }}
-                            >
-                                Add Event
-                            </button>
-                        </li>
+                {/* 4th child: ALWAYS present in DOM structural tree */}
+                <li>
+                    {showSetupButtons && (
+                        <button
+                            style={{ backgroundColor: 'rgb(222, 105, 135)' }}
+                            className="btn"
+                            onClick={() => {
+                                setSelectedDate(moment().subtract(1, 'day').toDate());
+                                setPopupType('create');
+                            }}
+                        >
+                            Add Event
+                        </button>
+                    )}
+                </li>
 
-                        {/* 5th child */}
-                        <li>
-                            <button
-                                style={{ backgroundColor: 'rgb(140, 189, 76)' }}
-                                className="btn"
-                                onClick={() => {
-                                    setSelectedDate(moment().add(1, 'day').toDate());
-                                    setPopupType('create');
-                                }}
-                            >
-                                Add Event
-                            </button>
-                        </li>
-                    </>
-                )}
+                {/* 5th child: ALWAYS present in DOM structural tree */}
+                <li>
+                    {showSetupButtons && (
+                        <button
+                            style={{ backgroundColor: 'rgb(140, 189, 76)' }}
+                            className="btn"
+                            onClick={() => {
+                                setSelectedDate(moment().add(1, 'day').toDate());
+                                setPopupType('create');
+                            }}
+                        >
+                            Add Event
+                        </button>
+                    )}
+                </li>
             </ul>
 
             <Calendar
