@@ -15,7 +15,6 @@ function App() {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [filter, setFilter] = useState('All');
     const [popupType, setPopupType] = useState(null);
-    const [showTestBtn, setShowTestBtn] = useState(true);
     
     // Controlled form states
     const [newEventTitle, setNewEventTitle] = useState('');
@@ -46,14 +45,7 @@ function App() {
             end: moment(selectedDate).add(1, 'hour').toDate()
         };
 
-        const updatedEvents = [...events, newEvent];
-        setEvents(updatedEvents);
-
-        // Hide only the 5th test button once test events are created
-        if (updatedEvents.length >= 2) {
-            setShowTestBtn(false);
-        }
-
+        setEvents([...events, newEvent]);
         setNewEventTitle('');
         setNewEventLocation('');
         setPopupType(null);
@@ -97,39 +89,47 @@ function App() {
         <div className="App">
             <ul className="filter-buttons" style={{ zIndex: 1001 }}>
                 {/* 1st child: All Filter */}
-                <li><button className="btn" onClick={() => setFilter('All')}>
-                    All
-                </button></li>
+                <li>
+                    <button className="btn" onClick={() => setFilter('All')}>
+                        All
+                    </button>
+                </li>
 
                 {/* 2nd child: Past Filter */}
-                <li><button className="btn" onClick={() => setFilter('Past')}>
-                    Past
-                </button></li>
+                <li>
+                    <button className="btn" onClick={() => setFilter('Past')}>
+                        Past
+                    </button>
+                </li>
 
                 {/* 3rd child: Upcoming Filter */}
-                <li><button
-                    style={{ backgroundColor: 'rgb(140, 189, 76)' }}
-                    className="btn"
-                    onClick={() => setFilter('Upcoming')}
-                >
-                    Upcoming
-                </button></li>
+                <li>
+                    <button
+                        style={{ backgroundColor: 'rgb(140, 189, 76)' }}
+                        className="btn"
+                        onClick={() => setFilter('Upcoming')}
+                    >
+                        Upcoming
+                    </button>
+                </li>
 
-                {/* 4th child: Main Add Event Button (:nth-child(4) > .btn) - ALWAYS present */}
-                <li><button
-                    style={{ backgroundColor: 'rgb(222, 105, 135)' }}
-                    className="btn"
-                    onClick={() => {
-                        setSelectedDate(moment().subtract(1, 'day').toDate());
-                        setPopupType('create');
-                    }}
-                >
-                    Add Event
-                </button></li>
+                {/* 4th child: Add Past Event (:nth-child(4) > .btn) */}
+                <li>
+                    <button
+                        style={{ backgroundColor: 'rgb(222, 105, 135)' }}
+                        className="btn"
+                        onClick={() => {
+                            setSelectedDate(moment().subtract(1, 'day').toDate());
+                            setPopupType('create');
+                        }}
+                    >
+                        Add Event
+                    </button>
+                </li>
 
-                {/* 5th child: Test Add Event Button (:nth-child(5) > .btn) - Hidden after test setup */}
-                {showTestBtn && (
-                    <li><button
+                {/* 5th child: Add Upcoming Event (:nth-child(5) > .btn) */}
+                <li>
+                    <button
                         style={{ backgroundColor: 'rgb(140, 189, 76)' }}
                         className="btn"
                         onClick={() => {
@@ -138,8 +138,8 @@ function App() {
                         }}
                     >
                         Add Event
-                    </button></li>
-                )}
+                    </button>
+                </li>
             </ul>
 
             <Calendar
