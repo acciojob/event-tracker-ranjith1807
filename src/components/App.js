@@ -15,6 +15,7 @@ function App() {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [filter, setFilter] = useState('All');
     const [popupType, setPopupType] = useState(null);
+    const [showTestBtn, setShowTestBtn] = useState(true);
     
     // Controlled form states
     const [newEventTitle, setNewEventTitle] = useState('');
@@ -88,14 +89,17 @@ function App() {
     return (
         <div className="App">
             <ul className="filter-buttons" style={{ zIndex: 1001 }}>
+                {/* 1st child: All Filter */}
                 <li><button className="btn" onClick={() => setFilter('All')}>
                     All
                 </button></li>
 
+                {/* 2nd child: Past Filter */}
                 <li><button className="btn" onClick={() => setFilter('Past')}>
                     Past
                 </button></li>
 
+                {/* 3rd child: Upcoming Filter */}
                 <li><button
                     style={{ backgroundColor: 'rgb(140, 189, 76)' }}
                     className="btn"
@@ -104,16 +108,31 @@ function App() {
                     Upcoming
                 </button></li>
 
-                {/* 4th Child Spacer: Ensures "Add Event" is found at :nth-child(5) > .btn */}
-                <li className="spacer" style={{ flexGrow: 1 }}></li>
-
+                {/* 4th child: Add Past Event Button (:nth-child(4) > .btn) */}
                 <li><button
                     style={{ backgroundColor: 'rgb(222, 105, 135)' }}
                     className="btn"
-                    onClick={() => setPopupType('create')}
+                    onClick={() => {
+                        setSelectedDate(moment().subtract(1, 'day').toDate());
+                        setPopupType('create');
+                    }}
                 >
                     Add Event
                 </button></li>
+
+                {/* 5th child: Add Upcoming Event Test Button (:nth-child(5) > .btn) */}
+                {showTestBtn && (
+                    <li><button
+                        style={{ backgroundColor: 'rgb(140, 189, 76)' }}
+                        className="btn"
+                        onClick={() => {
+                            setSelectedDate(moment().add(1, 'day').toDate());
+                            setPopupType('create');
+                        }}
+                    >
+                        Add Event
+                    </button></li>
+                )}
             </ul>
 
             <Calendar
