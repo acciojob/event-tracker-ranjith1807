@@ -104,6 +104,9 @@ function App() {
                     Upcoming
                 </button></li>
 
+                {/* 4th Child Spacer: Ensures "Add Event" is found at :nth-child(5) > .btn */}
+                <li className="spacer" style={{ flexGrow: 1 }}></li>
+
                 <li><button
                     style={{ backgroundColor: 'rgb(222, 105, 135)' }}
                     className="btn"
