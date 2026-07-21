@@ -4,7 +4,7 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import "../styles/App.css";
 
-// Compatible with both react-big-calendar v0.20.1 and newer versions
+// Backward-compatible localizer initialization for react-big-calendar v0.20.1
 const momentLocalizer = namedMomentLocalizer || (BigCalendar && BigCalendar.momentLocalizer);
 const Calendar = NamedCalendar || BigCalendar;
 const localizer = momentLocalizer(moment);
@@ -16,7 +16,7 @@ function App() {
     const [filter, setFilter] = useState('All');
     const [popupType, setPopupType] = useState(null);
     
-    // Form States
+    // Controlled form states
     const [newEventTitle, setNewEventTitle] = useState('');
     const [newEventLocation, setNewEventLocation] = useState('');
     const [editEventTitle, setEditEventTitle] = useState('');
@@ -88,17 +88,17 @@ function App() {
     return (
         <div className="App">
             <ul className="filter-buttons" style={{ zIndex: 1001 }}>
-                <li><button className="btn filter-btn" onClick={() => setFilter('All')}>
+                <li><button className="btn" onClick={() => setFilter('All')}>
                     All
                 </button></li>
 
-                <li><button className="btn filter-btn" onClick={() => setFilter('Past')}>
+                <li><button className="btn" onClick={() => setFilter('Past')}>
                     Past
                 </button></li>
 
                 <li><button
                     style={{ backgroundColor: 'rgb(140, 189, 76)' }}
-                    className="btn filter-btn"
+                    className="btn"
                     onClick={() => setFilter('Upcoming')}
                 >
                     Upcoming
@@ -106,7 +106,7 @@ function App() {
 
                 <li><button
                     style={{ backgroundColor: 'rgb(222, 105, 135)' }}
-                    className="btn filter-btn"
+                    className="btn"
                     onClick={() => setPopupType('create')}
                 >
                     Add Event
